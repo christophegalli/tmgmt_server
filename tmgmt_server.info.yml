@@ -1,0 +1,7 @@
+name: Tmgmt Server
+type: module
+description: Core module for the Translation Management Server suite
+core: 8.x
+package: Translation Management Server
+dependencies:
+  - tmgmt
