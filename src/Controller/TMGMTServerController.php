@@ -22,7 +22,7 @@ class TMGMTServerController extends ControllerBase {
   public function addRemoteTranslation(Request $Request) {
 
     $response['data'] = 'Antwort: ' . $Request->get('galli');
-    return  new JsonResponse($response) ;
+    return  new JsonResponse(getallheaders()) ;
   }
 
 }
