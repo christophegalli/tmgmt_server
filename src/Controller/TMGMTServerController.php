@@ -3,6 +3,7 @@
 namespace Drupal\tmgmt_server\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\tmgmt\Entity\JobItem;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Component\Serialization\Json;
@@ -24,17 +25,30 @@ class TMGMTServerController extends ControllerBase {
    */
   public function addRemoteTranslation(Request $Request) {
   /** @var  Job $job */
+  /** @var  JobItem $job_item */
 
-    $job_data = $Request->request->get('data');
+    $from = $Request->get('from');
+    $to = $Request->get('to');
+    $label = $Request->get('label') . ' remote';
 
-    $job = Job::create();
+    $job =  Job::create(array(
+      'uid' => 0,
+      'source_language' => $from,
+      'target_language' => $to,
+      'label' => $label,
+    ));
 
-    $
+    $job->save();
 
-
-
-    $response['data'] = $job_data;
+    $items_data = $Request->request->get('items');
+    foreach($items_data as $key => $one_item) {
+      $job_item = $job->addItem($one_item['plugin'], $one_item['item_type'], $one_item['item_id']);
+      //$job_item->set('unserialized_data', $one_item['data']);
+    }
+    
+    $response['job'] = $job->getData;
     return  new JsonResponse($response);
+
   }
 
 }
