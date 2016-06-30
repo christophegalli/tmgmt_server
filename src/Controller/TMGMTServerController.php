@@ -17,36 +17,51 @@ use Drupal\tmgmt_local\Entity\LocalTask;
  */
 class TMGMTServerController extends ControllerBase {
 
+
+  /**
+   * Create Job from data transferred by the client
+   * @param array $job_data
+   */
+  public function createJobFromData (array $job_data) {
+    /** @var  Job $job */
+    /** @var  JobItem $job_item */
+    
+    $job =  Job::create(array(
+      'uid' => 0,
+      'source_language' => $job_data['from'],
+      'target_language' => $job_data['to'],
+      'label' => $job_data['label'],
+    ));
+
+    $job->save();
+
+    foreach($job_data['items'] as $key => $one_item) {
+      $job_item = $job->addItem($one_item['plugin'], $one_item['item_type'], $one_item['item_id']);
+      //$job_item->set('unserilizedData', $one_item['data']);
+    }
+    
+    return $job;
+  }
+  
   /**
    * Addtranslation.
    *
    * @return string
    *   Return Hello string.
    */
-  public function addRemoteTranslation(Request $Request) {
-  /** @var  Job $job */
-  /** @var  JobItem $job_item */
+  public function addRemoteTranslation (Request $Request) {
 
-    $from = $Request->get('from');
-    $to = $Request->get('to');
-    $label = $Request->get('label') . ' remote';
+    $job_data = [
+      'from' => $Request->get('from'),
+      'to' => $Request->get('to'),
+      'label' => $Request->get('label') . ' remote',
+      'items' => $Request->get('items'),
+    ];
 
-    $job =  Job::create(array(
-      'uid' => 0,
-      'source_language' => $from,
-      'target_language' => $to,
-      'label' => $label,
-    ));
+    $job = $this->createJobFromData($job_data);
 
-    $job->save();
-
-    $items_data = $Request->request->get('items');
-    foreach($items_data as $key => $one_item) {
-      $job_item = $job->addItem($one_item['plugin'], $one_item['item_type'], $one_item['item_id']);
-      //$job_item->set('unserialized_data', $one_item['data']);
-    }
     
-    $response['job'] = $job->getData;
+    $response['test'] = $job_data['items'];
     return  new JsonResponse($response);
 
   }
