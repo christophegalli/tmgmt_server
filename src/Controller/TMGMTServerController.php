@@ -26,44 +26,31 @@ class TMGMTServerController extends ControllerBase {
     /** @var  Job $job */
     /** @var  JobItem $job_item */
     
-    $job =  Job::create(array(
-      'uid' => 0,
-      'source_language' => $job_data['from'],
-      'target_language' => $job_data['to'],
-      'label' => $job_data['label'],
-    ));
-
-    $job->save();
-
-    foreach($job_data['items'] as $key => $one_item) {
-      $job_item = $job->addItem($one_item['plugin'], $one_item['item_type'], $one_item['item_id']);
-      //$job_item->set('unserilizedData', $one_item['data']);
-    }
-    
+    $job = Job::create();
     return $job;
   }
+
   
   /**
    * Addtranslation.
    *
    * @return string
-   *   Return Hello string.
+   *   Return result code.
+   *   If successful, return relation table in body.
    */
-  public function addRemoteTranslation (Request $Request) {
+  public function translationJob (Request $Request) {
 
     $job_data = [
       'from' => $Request->get('from'),
       'to' => $Request->get('to'),
-      'label' => $Request->get('label') . ' remote',
       'items' => $Request->get('items'),
+      'comment' => $Request->get('comment'),
     ];
 
     $job = $this->createJobFromData($job_data);
-
     
-    $response['test'] = $job_data['items'];
+    $response['test'] = $job_data;
     return  new JsonResponse($response);
 
   }
-
 }
