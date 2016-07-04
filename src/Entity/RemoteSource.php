@@ -20,7 +20,6 @@ use Drupal\user\UserInterface;
  *   base_table = "tmgmt_server_remote_source",
  *   entity_keys = {
  *     "id" = "id",
- *     "label" = "name",
  *     "uuid" = "uuid"
  *   },
  * )
@@ -119,41 +118,61 @@ class RemoteSource extends ContentEntityBase {
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields['id'] = BaseFieldDefinition::create('integer')
-      ->setLabel(t('ID'))
       ->setDescription(t('The ID of the Remote source entity.'))
       ->setReadOnly(TRUE);
+
     $fields['uuid'] = BaseFieldDefinition::create('uuid')
-      ->setLabel(t('UUID'))
       ->setDescription(t('The UUID of the Remote source entity.'))
       ->setReadOnly(TRUE);
 
     $fields['name'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Name'))
       ->setDescription(t('The name of the Remote source entity.'))
       ->setDefaultValue('');
 
-    $fields['status'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(t('Publishing status'))
-      ->setDescription(t('A boolean indicating whether the Remote source is published.'))
-      ->setDefaultValue(TRUE);
-
-    $fields['langcode'] = BaseFieldDefinition::create('language')
-      ->setLabel(t('Language code'))
-      ->setDescription(t('The language code for the Remote source entity.'));
-
     $fields['created'] = BaseFieldDefinition::create('created')
-      ->setLabel(t('Created'))
       ->setDescription(t('The time that the entity was created.'));
 
     $fields['changed'] = BaseFieldDefinition::create('changed')
-      ->setLabel(t('Changed'))
       ->setDescription(t('The time that the entity was last edited.'));
 
-    $fields['cid'] = BaseFieldDefinition::create('int')
-      ->setDescription(t('The id of the remote client tis belongs to'))
+    $fields['cid'] = BaseFieldDefinition::create('integer')
+      ->setDescription(t('The id of the remote client tis belongs to.'))
       ->setLabel(t('Remote Client ID'));
 
-    
+    $fields['source_language'] = BaseFieldDefinition::create('string')
+      ->setDescription(t('Source language'))
+      ->setDefaultValue('')
+      ->setSetting('max_length', 12);
+
+    $fields['target_language'] = BaseFieldDefinition::create('string')
+      ->setDescription(t('Target language'))
+      ->setDefaultValue('')
+      ->setSetting('max_length', 12);
+
+    $fields['data'] = BaseFieldDefinition::create('string_long')
+      ->setDescription(t('Serialized Data'))
+      ->setDefaultValue('');
+
+    $fields['callback'] = BaseFieldDefinition::create('string')
+      ->setDescription(t('The callback URL that should be used to inform the remote client about the finished translation.'))
+      ->setDefaultValue('')
+      ->setSetting('max_length', 255);
+
+    $fields['comment'] = BaseFieldDefinition::create('string')
+      ->setDescription(t('The comment sent with the job'))
+      ->setDefaultValue('')
+      ->setSetting('max_length', 255);
+
+    $fields['reference'] = BaseFieldDefinition::create('string')
+      ->setDescription(t('The client reference for the data to be translated.'))
+      ->setDefaultValue('')
+      ->setSetting('max_length', 30);
+
+    $fields['state'] = BaseFieldDefinition::create('integer')
+      ->setDescription(t('The state of the remote source.'))
+      ->setRequired(TRUE)
+      ->setDefaultValue(0);
+
 
     return $fields;
   }
