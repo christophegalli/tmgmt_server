@@ -125,7 +125,7 @@ class RemoteSource extends ContentEntityBase {
       ->setDescription(t('The UUID of the Remote source entity.'))
       ->setReadOnly(TRUE);
 
-    $fields['name'] = BaseFieldDefinition::create('string')
+    $fields['label'] = BaseFieldDefinition::create('string')
       ->setDescription(t('The name of the Remote source entity.'))
       ->setDefaultValue('');
 
@@ -155,6 +155,11 @@ class RemoteSource extends ContentEntityBase {
 
     $fields['callback'] = BaseFieldDefinition::create('string')
       ->setDescription(t('The callback URL that should be used to inform the remote client about the finished translation.'))
+      ->setDefaultValue('')
+      ->setSetting('max_length', 255);
+
+    $fields['user_agent'] = BaseFieldDefinition::create('string')
+      ->setDescription(t('Form where is the called being executed.'))
       ->setDefaultValue('')
       ->setSetting('max_length', 255);
 
