@@ -11,6 +11,8 @@ use Drupal\tmgmt\Entity\Job;
 use Drupal\tmgmt_local\Entity\LocalTask;
 use Drupal\tmgmt_server\Entity\RemoteSource;
 
+
+
 /**
  * Class TMGMTServerController.
  *
@@ -26,8 +28,10 @@ class TMGMTServerController extends ControllerBase {
   public function receiveTranslationJob (array $job_data) {
     /** @var  Job $job */
     /** @var  JobItem $job_item */
+    /** @var  \Drupal\Core\Database\Transaction $transaction */
 
     $sources = [];
+    $transaction = \Drupal::service('database')->startTransaction();
 
     foreach($job_data['items'] as $key => $item) {
       $item['cid'] = 0;
@@ -43,6 +47,7 @@ class TMGMTServerController extends ControllerBase {
 
     }
 
+    // Create translation job for this translation request.
     $job = Job::create([
       'uid' => 1,
       'source_language' => $job_data['from'],
@@ -50,10 +55,21 @@ class TMGMTServerController extends ControllerBase {
       'translator' => 'local',
     ]);
 
+    // This will be saved in the following addItem() call.
+    //$job->set('job_comment', $job_data['job_comment']);
+
+    // Create job items for each remote source.
     foreach($sources as $key => $source) {
       $job->addItem('remote', 'tmgmt_server_remote_source', $source->id());
     }
-  }
+
+    // Request translation locally.
+    if ($job->requestTranslation() === FALSE) {
+      $transaction->rollback();
+    }
+
+    return $job;
+   }
 
   
   /**
@@ -75,6 +91,7 @@ class TMGMTServerController extends ControllerBase {
       'user_agent' => $headers['User-Agent'],
     ];
 
+    $job_data_json = Json::encode($job_data);
     $job = $this->receiveTranslationJob($job_data);
     
     
