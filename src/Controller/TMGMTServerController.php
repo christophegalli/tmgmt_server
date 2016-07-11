@@ -23,26 +23,41 @@ class TMGMTServerController extends ControllerBase {
    * Create Job from data transferred by the client
    * @param array $job_data
    */
-  public function saveRemoteSource (array $job_data) {
+  public function receiveTranslationJob (array $job_data) {
     /** @var  Job $job */
     /** @var  JobItem $job_item */
-    
+
+    $sources = [];
+
     foreach($job_data['items'] as $key => $item) {
       $item['cid'] = 0;
       $item['source_language'] = $job_data['from'];
       $item['target_language'] = $job_data['to'];
-      $item['comment'] = $job_data['comment'];
       $item['uid'] = 1;
       $item['data'] = serialize($item['data']);
       $item['user_agent'] = $job_data['user_agent'];
+      $item['langcode'] = $job_data['from'];
 
-      RemoteSource::create($item)->save();
+      $sources[$key] = RemoteSource::create($item);
+      $sources[$key]->save();
+
+    }
+
+    $job = Job::create([
+      'uid' => 1,
+      'source_language' => $job_data['from'],
+      'target_language' => $job_data['to'],
+      'translator' => 'local',
+    ]);
+
+    foreach($sources as $key => $source) {
+      $job->addItem('remote', 'tmgmt_server_remote_source', $source->id());
     }
   }
 
   
   /**
-   * Addtranslation.
+   * TranslationJob.
    *
    * @return string
    *   Return result code.
@@ -56,16 +71,17 @@ class TMGMTServerController extends ControllerBase {
       'from' => $Request->get('from'),
       'to' => $Request->get('to'),
       'items' => $Request->get('items'),
-      'comment' => $Request->get('comment'),
+      'job_comment' => $Request->get('comment'),
       'user_agent' => $headers['User-Agent'],
     ];
 
-    $job = $this->saveRemoteSource($job_data);
+    $job = $this->receiveTranslationJob($job_data);
     
     
     
     $response['test'] = $job_data;
     $response['headers'] = getallheaders();
+    $response['cookies'] = $_COOKIE;
     return  new JsonResponse($response);
 
   }
