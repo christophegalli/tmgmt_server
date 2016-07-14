@@ -20,20 +20,46 @@ use Drupal\tmgmt_server\Entity\RemoteSource;
  */
 class TMGMTServerController extends ControllerBase {
 
-
   /**
-   * Create Job from data transferred by the client
+   * Create Job from data transferred by the client.
+   *
    * @param array $job_data
+   *    Date received from client.
    */
-  public function receiveTranslationJob (array $job_data) {
+  public function receiveTranslationJob(array $job_data) {
     /** @var  Job $job */
     /** @var  JobItem $job_item */
-    /** @var  \Drupal\Core\Database\Transaction $transaction */
 
+
+    return $job;
+  }
+
+  /**
+   * TranslationJob.
+   *
+   * @param Request $request
+   *   Arriving post request. Send from Guzzle.
+   * @return string
+   *   Return result code.
+   *   If successful, return relation table in body.
+   */
+  public function translationJob(Request $request) {
+
+    $headers = getallheaders();
+
+    $job_data = [
+      'label' => $request->get('label'),
+      'from' => $request->get('from'),
+      'to' => $request->get('to'),
+      'items' => $request->get('items'),
+      'job_comment' => $request->get('comment'),
+      'user_agent' => $headers['User-Agent'],
+    ];
+
+    // Save job data into a local entity to be retrieved by item->getData.
     $sources = [];
-    $transaction = \Drupal::service('database')->startTransaction();
 
-    foreach($job_data['items'] as $key => $item) {
+    foreach ($job_data['items'] as $key => $item) {
       $item['cid'] = 0;
       $item['source_language'] = $job_data['from'];
       $item['target_language'] = $job_data['to'];
@@ -44,11 +70,11 @@ class TMGMTServerController extends ControllerBase {
 
       $sources[$key] = RemoteSource::create($item);
       $sources[$key]->save();
-
     }
 
     // Create translation job for this translation request.
     $job = Job::create([
+      'label' => $job_data['label'],
       'uid' => 1,
       'source_language' => $job_data['from'],
       'target_language' => $job_data['to'],
@@ -56,50 +82,31 @@ class TMGMTServerController extends ControllerBase {
     ]);
 
     // This will be saved in the following addItem() call.
-    //$job->set('job_comment', $job_data['job_comment']);
+    $job->settings = ['job_comment' => $job_data['job_comment']];
 
     // Create job items for each remote source.
-    foreach($sources as $key => $source) {
+    foreach ($sources as $key => $source) {
       $job->addItem('remote', 'tmgmt_server_remote_source', $source->id());
     }
 
     // Request translation locally.
+    $transaction = \Drupal::service('database')->startTransaction();
     if ($job->requestTranslation() === FALSE) {
       $transaction->rollback();
     }
 
-    return $job;
-   }
-
-  
-  /**
-   * TranslationJob.
-   *
-   * @return string
-   *   Return result code.
-   *   If successful, return relation table in body.
-   */
-  public function translationJob (Request $Request) {
-
-    $headers = getallheaders();
-
-    $job_data = [
-      'from' => $Request->get('from'),
-      'to' => $Request->get('to'),
-      'items' => $Request->get('items'),
-      'job_comment' => $Request->get('comment'),
-      'user_agent' => $headers['User-Agent'],
+    // The job has been successfully submitted.
+    $response_data = [
+      'status' => 'ok',
+      'reference' => $job->id(),
+    ];
+    $response = [
+      'data' => $response_data,
     ];
 
-    $job_data_json = Json::encode($job_data);
-    $job = $this->receiveTranslationJob($job_data);
-    
-    
-    
-    $response['test'] = $job_data;
-    $response['headers'] = getallheaders();
-    $response['cookies'] = $_COOKIE;
-    return  new JsonResponse($response);
+
+    return new JsonResponse($response);
 
   }
+
 }
