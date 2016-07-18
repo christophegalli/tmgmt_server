@@ -244,7 +244,7 @@ class RemoteSource extends SourcePluginBase implements SourcePreviewInterface, C
     /*
      * @var RemoteSource $source
      */
-    $source = TMGMTRemoteSource::load($job_item->id());
+    $source = TMGMTRemoteSource::load($job_item->getItemId());
     $source->data = serialize($job_item->getData());
     $source->state = 1; // TMGMT_SERVER_REMOTE_SOURCE_TRANSLATED;
     $source->save();
