@@ -8,10 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Component\Serialization\Json;
 use Drupal\tmgmt\Entity\Job;
-use Drupal\tmgmt_local\Entity\LocalTask;
-use Drupal\tmgmt_server\Entity\RemoteSource;
-
-
+use Drupal\tmgmt_server\Entity\TMGMTRemoteSource;
 
 /**
  * Class TMGMTServerController.
@@ -68,7 +65,7 @@ class TMGMTServerController extends ControllerBase {
       $item['user_agent'] = $job_data['user_agent'];
       $item['langcode'] = $job_data['from'];
 
-      $sources[$key] = RemoteSource::create($item);
+      $sources[$key] = TMGMTRemoteSource::create($item);
       $sources[$key]->save();
     }
 
@@ -109,4 +106,13 @@ class TMGMTServerController extends ControllerBase {
 
   }
 
+  /**
+   * Pull translation data form remote source, return to client.
+   *
+   * @param \Drupal\tmgmt\Entity\JobItem $tmgmt_job_item
+   *   Corresponding job item.
+   */
+  public function pullTranslation(JobItem $tmgmt_job_item) {
+
+  }
 }

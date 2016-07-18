@@ -1,6 +1,12 @@
-tmgmt_server.tmgmt_server_controller_addTranslation:
+tmgmt_server.addTranslation:
   path: 'translation-job'
   defaults:
     _controller: '\Drupal\tmgmt_server\Controller\TMGMTServerController::translationJob'
+  requirements:
+    _permission: 'access content'
+tmgmt_server.pullTranslation:
+  path: 'translation-job/{tmgmt_job_item}/item'
+  defaults:
+    _controller: '\Drupal\tmgmt_server\Controller\TMGMTServerController::pullTranslation'
   requirements:
     _permission: 'access content'

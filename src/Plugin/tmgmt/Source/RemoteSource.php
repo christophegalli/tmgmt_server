@@ -24,6 +24,8 @@ use Drupal\tmgmt\TMGMTException;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\tmgmt\Entity\Job;
+use Drupal\tmgmt_server\Entity\TMGMTRemoteSource;
+use GuzzleHttp\Client;
 
 /**
  * Content entity source plugin controller.
@@ -239,18 +241,29 @@ class RemoteSource extends SourcePluginBase implements SourcePreviewInterface, C
    * {@inheritdoc}
    */
   public function saveTranslation(JobItemInterface $job_item, $target_langcode) {
-    /* @var \Drupal\Core\Entity\ContentEntityInterface $entity */
-    $entity = entity_load($job_item->getItemType(), $job_item->getItemId());
-    if (!$entity) {
-      $job_item->addMessage('The entity %id of type %type does not exist, the job can not be completed.', array(
-        '%id' => $job_item->getItemId(),
-        '%type' => $job_item->getItemType(),
-      ), 'error');
-      return FALSE;
+    /*
+     * @var RemoteSource $source
+     */
+    $source = TMGMTRemoteSource::load($job_item->id());
+    $source->data = serialize($job_item->getData());
+    $source->state = 1; // TMGMT_SERVER_REMOTE_SOURCE_TRANSLATED;
+    $source->save();
+
+    // The job item was accepted.
+    $job_item->accepted();
+
+    // Notify the remote client about the finished translation unless the
+    // translation happened instantly (machine-translation) in which case the
+    // service should output the translated data in the response of the
+    // request.
+    if (!empty($source->callback) && $source->created != REQUEST_TIME) {
+      $url = $source->callback->value;
+      $client = new Client();
+      // Notify the remote server about the finished translation. Normally this
+      // will issue a pull request on the client.
+      $client->request('GET', $url);
     }
 
-    $data = $job_item->getData();
-    $this->doSaveTranslations($entity, $data, $target_langcode);
     return TRUE;
   }
 
