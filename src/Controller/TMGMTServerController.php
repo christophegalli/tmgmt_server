@@ -113,6 +113,6 @@ class TMGMTServerController extends ControllerBase {
    *   Corresponding job item.
    */
   public function pullTranslation(JobItem $tmgmt_job_item) {
-
+    //$remoteJobItem = JobItem::load($tmgmt_job_item->get)
   }
 }

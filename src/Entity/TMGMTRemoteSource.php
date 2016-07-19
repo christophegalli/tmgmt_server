@@ -116,6 +116,14 @@ class TMGMTRemoteSource extends ContentEntityBase {
   /**
    * {@inheritdoc}
    */
+  public function getTranslation($langcode) {
+    // @todo: check if there is extende function to this.
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields['id'] = BaseFieldDefinition::create('integer')
       ->setDescription(t('The ID of the Remote source entity.'))
