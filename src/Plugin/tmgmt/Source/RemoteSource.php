@@ -261,7 +261,7 @@ class RemoteSource extends SourcePluginBase implements SourcePreviewInterface, C
       $url = $source->callback->value;
       $client = new Client();
       $options = [];
-      $options['form-params'] = array('id' => $job_item->id());
+      $options['form_params'] = array('id' => $job_item->getItemId());
 
       // Support for debug session, pass on the cookie.
       if (isset($_COOKIE['XDEBUG_SESSION'])) {

@@ -5,7 +5,7 @@ tmgmt_server.addTranslation:
   requirements:
     _permission: 'access content'
 tmgmt_server.pullTranslation:
-  path: 'translation-job/{tmgmt_job_item}/item'
+  path: 'translation-job/{tmgmt_server_remote_source}/item'
   defaults:
     _controller: '\Drupal\tmgmt_server\Controller\TMGMTServerController::pullTranslation'
   requirements:

@@ -4,6 +4,8 @@ namespace Drupal\tmgmt_server\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\tmgmt\Entity\JobItem;
+use Drupal\tmgmt\TMGMTException;
+use GuzzleHttp\Psr7\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Component\Serialization\Json;
@@ -101,18 +103,37 @@ class TMGMTServerController extends ControllerBase {
       'data' => $response_data,
     ];
 
-
     return new JsonResponse($response);
-
   }
 
   /**
    * Pull translation data form remote source, return to client.
    *
-   * @param \Drupal\tmgmt\Entity\JobItem $tmgmt_job_item
+   * @param TMGMTRemoteSource $tmgmt_server_remote_source
    *   Corresponding job item.
+   * @return \Symfony\Component\HttpFoundation\Response
+   *   Response including Json encoded job item data.
    */
-  public function pullTranslation(JobItem $tmgmt_job_item) {
-    //$remoteJobItem = JobItem::load($tmgmt_job_item->get)
+  public function pullTranslation(TMGMTRemoteSource $tmgmt_server_remote_source) {
+
+    $item_ids = \Drupal::entityQuery('tmgmt_job_item')
+      ->condition('item_type', 'remote')
+      ->condition('item_id', $tmgmt_server_remote_source->id())
+      ->execute();
+
+    if ($item_ids) {
+      if (count($item_ids) == 1) {
+        // Found the correcsponding job item.
+        $remote_job_item = JobItem::load(array_shift($item_ids));
+        $response['data'] = $remote_job_item->getData();
+
+        return new JsonResponse($response);
+      }
+      throw new TMGMTException('Multiple job items for remote source @rsid',
+        array ('rsid' => $tmgmt_server_remote_source->id()));
+    }
+
+    throw new TMGMTException('No job item available for remote source @rsid',
+      array ('rsid' => $tmgmt_server_remote_source->id()));
   }
 }
