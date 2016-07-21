@@ -117,7 +117,7 @@ class TMGMTServerController extends ControllerBase {
   public function pullTranslation(TMGMTRemoteSource $tmgmt_server_remote_source) {
 
     $item_ids = \Drupal::entityQuery('tmgmt_job_item')
-      ->condition('item_type', 'remote')
+      ->condition('item_type', 'tmgmt_server_remote_source')
       ->condition('item_id', $tmgmt_server_remote_source->id())
       ->execute();
 
@@ -125,7 +125,8 @@ class TMGMTServerController extends ControllerBase {
       if (count($item_ids) == 1) {
         // Found the correcsponding job item.
         $remote_job_item = JobItem::load(array_shift($item_ids));
-        $response['data'] = $remote_job_item->getData();
+        $response=
+          ['data' => $remote_job_item->getData()];
 
         return new JsonResponse($response);
       }
