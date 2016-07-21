@@ -257,19 +257,19 @@ class RemoteSource extends SourcePluginBase implements SourcePreviewInterface, C
     // service should output the translated data in the response of the
     // request.
     if (!empty($source->callback) && $source->created != REQUEST_TIME) {
+
       $url = $source->callback->value;
       $client = new Client();
-      // Notify the remote server about the finished translation. Normally this
-      // will issue a pull request on the client.
+      $options = [];
+      $options['form-params'] = array('id' => $job_item->id());
 
       // Support for debug session, pass on the cookie.
-      $options = [];
       if (isset($_COOKIE['XDEBUG_SESSION'])) {
         $cookie = 'XDEBUG_SESSION=' . $_COOKIE['XDEBUG_SESSION'];
         $options['headers'] = ['Cookie' => $cookie];
       }
 
-      $client->request('GET', $url, $options);
+      $client->request('POST', $url, $options);
     }
 
     return TRUE;
