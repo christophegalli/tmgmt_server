@@ -24,11 +24,13 @@ class TMGMTServerController extends ControllerBase {
    *
    * @param array $job_data
    *    Date received from client.
+   *
+   * @return Response
+   *   New job in JSON.
    */
   public function receiveTranslationJob(array $job_data) {
-    /** @var  Job $job */
-    /** @var  JobItem $job_item */
-
+    /* @var  Job $job */
+    /* @var  JobItem $job_item */
 
     return $job;
   }
@@ -38,12 +40,13 @@ class TMGMTServerController extends ControllerBase {
    *
    * @param Request $request
    *   Arriving post request. Send from Guzzle.
+   *
    * @return string
    *   Return result code.
    *   If successful, return relation table in body.
    */
   public function translationJob(Request $request) {
-
+    /* @var Job $job */
     $headers = getallheaders();
 
     $job_data = [
@@ -111,10 +114,15 @@ class TMGMTServerController extends ControllerBase {
    *
    * @param TMGMTRemoteSource $tmgmt_server_remote_source
    *   Corresponding job item.
+   *
    * @return \Symfony\Component\HttpFoundation\Response
    *   Response including Json encoded job item data.
+   *
+   * @throws TMGMTException
+   *   If 0 or more than 1 job items are returned ny the entity query.
    */
   public function pullTranslation(TMGMTRemoteSource $tmgmt_server_remote_source) {
+    /* @var array $item_ids */
 
     $item_ids = \Drupal::entityQuery('tmgmt_job_item')
       ->condition('item_type', 'tmgmt_server_remote_source')
@@ -123,18 +131,17 @@ class TMGMTServerController extends ControllerBase {
 
     if ($item_ids) {
       if (count($item_ids) == 1) {
-        // Found the correcsponding job item.
+        // Found the corresponding job item.
         $remote_job_item = JobItem::load(array_shift($item_ids));
-        $response=
-          ['data' => $remote_job_item->getData()];
+        $response = ['data' => $remote_job_item->getData()];
 
         return new JsonResponse($response);
       }
       throw new TMGMTException('Multiple job items for remote source @rsid',
-        array ('rsid' => $tmgmt_server_remote_source->id()));
+        array('rsid' => $tmgmt_server_remote_source->id()));
     }
 
     throw new TMGMTException('No job item available for remote source @rsid',
-      array ('rsid' => $tmgmt_server_remote_source->id()));
+      array('rsid' => $tmgmt_server_remote_source->id()));
   }
 }
