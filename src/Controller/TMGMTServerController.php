@@ -44,6 +44,9 @@ class TMGMTServerController extends ControllerBase {
    * @return string
    *   Return result code.
    *   If successful, return relation table in body.
+   *
+   * @throws TMGMTException
+   *   When LocalTask creation fails.
    */
   public function translationJob(Request $request) {
     /* @var Job $job */
@@ -65,7 +68,7 @@ class TMGMTServerController extends ControllerBase {
       $item['cid'] = 0;
       $item['source_language'] = $job_data['from'];
       $item['target_language'] = $job_data['to'];
-      $item['uid'] = 1;
+      $item['uid'] = \Drupal::currentUser();
       $item['data'] = serialize($item['data']);
       $item['user_agent'] = $job_data['user_agent'];
       $item['langcode'] = $job_data['from'];
@@ -86,21 +89,27 @@ class TMGMTServerController extends ControllerBase {
     // This will be saved in the following addItem() call.
     $job->settings = ['job_comment' => $job_data['job_comment']];
 
+    // Use mapping table to relate client and remote job items.
+    $mapping_table = [];
+
     // Create job items for each remote source.
     foreach ($sources as $key => $source) {
-      $job->addItem('remote', 'tmgmt_server_remote_source', $source->id());
+      $remote_item = $job->addItem('remote', 'tmgmt_server_remote_source', $source->id());
+      $mapping_table[$key] = $remote_item->id();
     }
 
     // Request translation locally.
     $transaction = \Drupal::service('database')->startTransaction();
     if ($job->requestTranslation() === FALSE) {
       $transaction->rollback();
+      throw new TMGMTException('Local Task cannot be created');
     }
 
     // The job has been successfully submitted.
     $response_data = [
       'status' => 'ok',
       'reference' => $job->id(),
+      'remote_mapping' => $mapping_table,
     ];
     $response = [
       'data' => $response_data,
