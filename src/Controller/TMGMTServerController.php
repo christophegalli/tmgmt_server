@@ -133,6 +133,7 @@ class TMGMTServerController extends ControllerBase {
   public function pullTranslation(TMGMTRemoteSource $tmgmt_server_remote_source) {
     /* @var array $item_ids */
 
+    // Return job item data when provided with the remote source id.
     $item_ids = \Drupal::entityQuery('tmgmt_job_item')
       ->condition('item_type', 'tmgmt_server_remote_source')
       ->condition('item_id', $tmgmt_server_remote_source->id())
@@ -152,5 +153,13 @@ class TMGMTServerController extends ControllerBase {
 
     throw new TMGMTException('No job item available for remote source @rsid',
       array('rsid' => $tmgmt_server_remote_source->id()));
+  }
+
+  public function pullRemoteItem (JobItem $tmgmt_job_item) {
+
+    // Return job item data when provide with the job item id.
+    $response = [];
+    $response['data'] = $tmgmt_job_item->getData();
+    return new JsonResponse($response);
   }
 }

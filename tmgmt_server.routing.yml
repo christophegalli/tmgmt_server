@@ -10,3 +10,9 @@ tmgmt_server.pullTranslation:
     _controller: '\Drupal\tmgmt_server\Controller\TMGMTServerController::pullTranslation'
   requirements:
     _permission: 'access content'
+tmgmt_server.pullItem:
+  path: 'remote-item/{tmgmt_job_item}'
+  defaults:
+    _controller: '\Drupal\tmgmt_server\Controller\TMGMTServerController::pullRemoteItem'
+  requirements:
+    _permission: 'access content'
