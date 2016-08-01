@@ -16,3 +16,18 @@ tmgmt_server.pullItem:
     _controller: '\Drupal\tmgmt_server\Controller\TMGMTServerController::pullRemoteItem'
   requirements:
     _permission: 'access content'
+
+entity.tmgmt_server_client.canonical:
+  path: '/tmgmt_server_client/{tmgmt_server_client}'
+  defaults:
+    _entity_view: 'tmgmt_server_client'
+    _title: 'Client Details'
+  requirements:
+    _permission: 'access content'
+content_entity_example.contact_add:
+  path: '/tmgmt_server_client/add'
+  defaults:
+    _entity_form: tmgmt_server_client.add
+    _title: 'Add Client'
+  requirements:
+    _permission: 'access content'
