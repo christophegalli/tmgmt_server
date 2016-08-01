@@ -269,14 +269,17 @@ class RemoteSource extends SourcePluginBase implements SourcePreviewInterface, C
         $options['headers'] = ['Cookie' => $cookie];
       }
 
-      $response = $client->request('POST', $url, $options);
-      if ($response->getStatusCode() <> 200) {
-        $job_item->addMessage('Unable to reach (@client), Error (@status). Pull translations from client',
+      try {
+        $response = $client->request('POST', $url, $options);
+      }
+      catch (\Exception $e) {
+        $job_item->addMessage('Unable to reach @client, @status. Try pulling translations from client',
           array(
-            'client' => $url,
-            'status' => $response->getStatusCode(),
+            '@client' => $url,
+            '@status' => $e->getMessage(),
           ));
       }
+
     }
 
     return TRUE;
