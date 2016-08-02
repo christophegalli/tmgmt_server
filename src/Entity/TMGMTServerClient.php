@@ -209,6 +209,43 @@ class TMGMTServerClient extends ContentEntityBase implements TMGMTServerClientIn
         'type' => 'string_textfield',
         'weight' => -4,
       ));
+
+    $fields['public'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Public Key'))
+      ->setDescription(t('The public key for this client.'))
+      ->setSettings(array(
+        'max_length' => 255,
+      ))
+      ->setDefaultValue('')
+      ->setDisplayOptions('view', array(
+        'label' => 'above',
+        'type' => 'string',
+        'weight' => -4,
+      ))
+      ->setDisplayOptions('form', array(
+        'type' => 'string_textfield',
+        'weight' => -4,
+        'disabled' => TRUE,
+      ));
+
+    $fields['private'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Private Key'))
+      ->setDescription(t('The private key for this client.'))
+      ->setSettings(array(
+        'max_length' => 255,
+      ))
+      ->setDefaultValue('')
+      ->setDisplayOptions('view', array(
+        'label' => 'above',
+        'type' => 'string',
+        'weight' => -4,
+      ))
+      ->setDisplayOptions('form', array(
+        'type' => 'string_textfield',
+        'weight' => -4,
+        '#disabled' => TRUE,
+      ));
+
     $fields['owner'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Owner'))
       ->setDescription(t('The owner of the client .'))
