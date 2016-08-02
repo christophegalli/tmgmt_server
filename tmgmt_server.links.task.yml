@@ -1,0 +1,21 @@
+# TMGMT Server Client routing definition
+tmgmt_server_client.settings_tab:
+  route_name: tmgmt_server_client.settings
+  title: 'Settings'
+  base_route: tmgmt_server_client.settings
+entity.tmgmt_server_client.canonical:
+  route_name: entity.tmgmt_server_client.canonical
+  base_route: entity.tmgmt_server_client.canonical
+  title: 'View'
+
+entity.tmgmt_server_client.edit_form:
+  route_name: entity.tmgmt_server_client.edit_form
+  base_route: entity.tmgmt_server_client.canonical
+  title: Edit
+
+entity.tmgmt_server_client.delete_form:
+  route_name:  entity.tmgmt_server_client.delete_form
+  base_route:  entity.tmgmt_server_client.canonical
+  title: Delete
+  weight: 10
+

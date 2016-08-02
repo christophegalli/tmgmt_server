@@ -1,0 +1,22 @@
+add tmgmt server client entities:
+  title: 'Create new TMGMT Server Client entities'
+
+administer tmgmt server client entities:
+  title: 'Administer TMGMT Server Client entities'
+  description: 'Allow to access the administration form to configure TMGMT Server Client entities.'
+  restrict access: true
+
+delete tmgmt server client entities:
+  title: 'Delete TMGMT Server Client entities'
+
+edit tmgmt server client entities:
+  title: 'Edit TMGMT Server Client entities'
+
+access tmgmt server client overview:
+  title: 'Access the TMGMT Server Client overview page'
+
+view published tmgmt server client entities:
+  title: 'View published TMGMT Server Client entities'
+
+view unpublished tmgmt server client entities:
+  title: 'View unpublished TMGMT Server Client entities'

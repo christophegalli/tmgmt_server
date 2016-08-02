@@ -1,0 +1,5 @@
+entity.tmgmt_server_client.add_form:
+  route_name: entity.tmgmt_server_client.add_form
+  title: 'Add TMGMT Server Client'
+  appears_on:
+    - entity.tmgmt_server_client.collection

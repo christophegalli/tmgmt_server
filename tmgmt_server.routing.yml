@@ -24,10 +24,19 @@ entity.tmgmt_server_client.canonical:
     _title: 'Client Details'
   requirements:
     _permission: 'access content'
-content_entity_example.contact_add:
+entity.tmgmt_server_client.add:
   path: '/tmgmt_server_client/add'
   defaults:
     _entity_form: tmgmt_server_client.add
     _title: 'Add Client'
   requirements:
+    _permission: 'access content'
+entity.tmgmt_server_client.collection:
+  path: '/tmgmt_server_client/list'
+  defaults:
+  # Calls the list controller, defined in the annotation of the contact entity.
+    _entity_list: 'tmgmt_server_client'
+    _title: 'Client List'
+  requirements:
+  # Checks for permission directly.
     _permission: 'access content'

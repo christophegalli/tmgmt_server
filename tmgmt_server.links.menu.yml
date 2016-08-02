@@ -1,0 +1,13 @@
+# TMGMT Server Client menu items definition
+entity.tmgmt_server_client.collection:
+  title: 'TMGMT Server Client list'
+  route_name: entity.tmgmt_server_client.collection
+  description: 'List TMGMT Server Client entities'
+  parent: system.admin_structure
+  weight: 100
+
+tmgmt_server_client.admin.structure.settings:
+  title: TMGMT Server Client settings
+  description: 'Configure TMGMT Server Client entities'
+  route_name: tmgmt_server_client.settings
+  parent: system.admin_structure
