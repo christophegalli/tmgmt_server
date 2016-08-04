@@ -44,11 +44,10 @@ use Drupal\user\UserInterface;
  *     "status" = "status",
  *   },
  *   links = {
- *     "canonical" = "/admin/structure/tmgmt_server_client/{tmgmt_server_client}",
- *     "add-form" = "/admin/structure/tmgmt_server_client/add",
- *     "edit-form" = "/admin/structure/tmgmt_server_client/{tmgmt_server_client}/edit",
- *     "delete-form" = "/admin/structure/tmgmt_server_client/{tmgmt_server_client}/delete",
- *     "collection" = "/admin/structure/tmgmt_server_client",
+ *     "canonical" = "/tmgmt_server_client/{tmgmt_server_client}",
+ *     "add-form" = "/tmgmt_server_client/add",
+ *     "edit-form" = "/tmgmt_server_client/{tmgmt_server_client}/edit",
+ *     "delete-form" = "/tmgmt_server_client/{tmgmt_server_client}/delete",
  *   },
  *   field_ui_base_route = "tmgmt_server_client.settings"
  * )
@@ -221,11 +220,6 @@ class TMGMTServerClient extends ContentEntityBase implements TMGMTServerClientIn
         'label' => 'above',
         'type' => 'string',
         'weight' => -4,
-      ))
-      ->setDisplayOptions('form', array(
-        'type' => 'string_textfield',
-        'weight' => -4,
-        'disabled' => TRUE,
       ));
 
     $fields['private'] = BaseFieldDefinition::create('string')
@@ -239,11 +233,6 @@ class TMGMTServerClient extends ContentEntityBase implements TMGMTServerClientIn
         'label' => 'above',
         'type' => 'string',
         'weight' => -4,
-      ))
-      ->setDisplayOptions('form', array(
-        'type' => 'string_textfield',
-        'weight' => -4,
-        '#disabled' => TRUE,
       ));
 
     $fields['owner'] = BaseFieldDefinition::create('entity_reference')

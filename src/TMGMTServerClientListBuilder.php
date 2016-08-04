@@ -34,7 +34,7 @@ class TMGMTServerClientListBuilder extends EntityListBuilder {
     $row['name'] = $this->l(
       $entity->label(),
       new Url(
-        'entity.tmgmt_server_client.edit_form', array(
+        'entity.tmgmt_server_client.canonical', array(
           'tmgmt_server_client' => $entity->id(),
         )
       )
