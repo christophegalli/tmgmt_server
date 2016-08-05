@@ -57,6 +57,11 @@ class TMGMTServerClient extends ContentEntityBase implements TMGMTServerClientIn
   use EntityChangedTrait;
 
   /**
+   * Character count for keys.
+   */
+  const TMGMT_KEY_LENGTH = 64;
+
+  /**
    * {@inheritdoc}
    */
   public static function preCreate(EntityStorageInterface $storage_controller, array &$values) {
@@ -144,6 +149,28 @@ class TMGMTServerClient extends ContentEntityBase implements TMGMTServerClientIn
   /**
    * {@inheritdoc}
    */
+  public function setKeys() {
+    $this->set('client_id', user_password($this::TMGMT_KEY_LENGTH));
+    $this->set('secret', user_password($this::TMGMT_KEY_LENGTH));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getClientId() {
+    return $this->get('client_id');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSecret() {
+    return $this->get('secret');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
 
@@ -209,9 +236,9 @@ class TMGMTServerClient extends ContentEntityBase implements TMGMTServerClientIn
         'weight' => -4,
       ));
 
-    $fields['public'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Public Key'))
-      ->setDescription(t('The public key for this client.'))
+    $fields['client_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Client ID'))
+      ->setDescription(t('The public ID for this client.'))
       ->setSettings(array(
         'max_length' => 255,
       ))
@@ -222,9 +249,9 @@ class TMGMTServerClient extends ContentEntityBase implements TMGMTServerClientIn
         'weight' => -4,
       ));
 
-    $fields['private'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Private Key'))
-      ->setDescription(t('The private key for this client.'))
+    $fields['secret'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Secret'))
+      ->setDescription(t('The secret key for this client.'))
       ->setSettings(array(
         'max_length' => 255,
       ))

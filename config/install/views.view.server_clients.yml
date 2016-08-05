@@ -1,8 +1,8 @@
-uuid: 8f08466f-bc51-479d-aa4a-3d748fae4d2e
 langcode: en
 status: true
 dependencies:
   config:
+    - system.menu.account
     - system.menu.admin
   module:
     - tmgmt_server
@@ -347,6 +347,15 @@ display:
       display_extenders: {  }
       path: myclients
       display_description: 'List of the clients own by the user'
+      menu:
+        type: normal
+        title: 'My Clients'
+        description: 'List all clients owned by me'
+        expanded: false
+        parent: ''
+        weight: 0
+        context: '0'
+        menu_name: account
     cache_metadata:
       max-age: 0
       contexts:

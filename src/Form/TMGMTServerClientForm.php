@@ -28,10 +28,17 @@ class TMGMTServerClientForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $entity = $this->entity;
+
+    // Create keys and add them if not available.
+    if ($entity->secret->value == '') {
+      $entity->setKeys();
+    }
+
     $status = parent::save($form, $form_state);
 
     switch ($status) {
       case SAVED_NEW:
+
         drupal_set_message($this->t('Created the %label TMGMT Server Client.', [
           '%label' => $entity->label(),
         ]));

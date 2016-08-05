@@ -2,5 +2,6 @@ entity.tmgmt_server_client.add_form:
   route_name: entity.tmgmt_server_client.add_form
   title: 'Add Server Client'
   appears_on:
-    - entity.tmgmt_server_client.collection
+    - view.server_clients.page_1
+    - view.server_clients.page_2
 
