@@ -20,6 +20,8 @@ class TMGMTServerClientForm extends ContentEntityForm {
     $form = parent::buildForm($form, $form_state);
     $entity = $this->entity;
 
+
+
     return $form;
   }
 
@@ -50,6 +52,20 @@ class TMGMTServerClientForm extends ContentEntityForm {
         ]));
     }
     $form_state->setRedirect('entity.tmgmt_server_client.canonical', ['tmgmt_server_client' => $entity->id()]);
+  }
+  /**
+   * {@inheritdoc}
+   */
+
+  public function form(array $form, FormStateInterface $form_state) {
+
+    $form = parent::form($form, $form_state);
+
+    $account = \Drupal::currentUser()->getAccount();
+    if (!$account->hasPermission('administer tmgmt server client entities')) {
+      $form['owner']['#disabled'] = TRUE;
+    }
+    return $form;
   }
 
 }

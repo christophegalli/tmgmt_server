@@ -4,9 +4,12 @@ dependencies:
   config:
     - system.menu.account
     - system.menu.admin
+    - user.role.authenticated
   module:
     - tmgmt_server
     - user
+_core:
+  default_config_hash: '-DWpYx1OfkGW5iXClY5yYG5p9qsL2hc_Dn6kbj33BgQ'
 id: server_clients
 label: 'Server Clients'
 module: views
@@ -23,8 +26,10 @@ display:
     position: 0
     display_options:
       access:
-        type: none
-        options: {  }
+        type: role
+        options:
+          role:
+            authenticated: authenticated
       cache:
         type: tag
         options: {  }
@@ -303,6 +308,7 @@ display:
         - url
         - url.query_args
         - user
+        - user.roles
       tags: {  }
   page_1:
     display_plugin: page
@@ -364,4 +370,5 @@ display:
         - url
         - url.query_args
         - user
+        - user.roles
       tags: {  }

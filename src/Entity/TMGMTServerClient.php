@@ -68,6 +68,7 @@ class TMGMTServerClient extends ContentEntityBase implements TMGMTServerClientIn
     parent::preCreate($storage_controller, $values);
     $values += array(
       'user_id' => \Drupal::currentUser()->id(),
+      'owner' => \Drupal::currentUser()->id(),
     );
   }
 
