@@ -162,4 +162,21 @@ class TMGMTServerController extends ControllerBase {
     $response['data'] = $tmgmt_job_item->getData();
     return new JsonResponse($response);
   }
+
+  public function languagePairsIndex(Request $request) {
+    $source = $request->get('source_language');
+
+    $languages[] = array(
+      'source_language' => 'en',
+      'target_language' => 'de',
+    );
+
+    $response_data = [
+      'status' => 'ok',
+      'data' => $languages,
+    ];
+
+    return new JsonResponse($response_data);
+  }
+
 }

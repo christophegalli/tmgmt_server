@@ -1,5 +1,5 @@
 tmgmt_server.addTranslation:
-  path: 'translation-job'
+  path: 'api/v1/translation-job'
   defaults:
     _controller: '\Drupal\tmgmt_server\Controller\TMGMTServerController::translationJob'
   requirements:
@@ -14,6 +14,13 @@ tmgmt_server.pullItem:
   path: 'remote-item/{tmgmt_job_item}'
   defaults:
     _controller: '\Drupal\tmgmt_server\Controller\TMGMTServerController::pullRemoteItem'
+  requirements:
+    _permission: 'access content'
+
+tmgmt_server.language-pairs:
+  path: 'api/v1/language-pairs'
+  defaults:
+    _controller: '\Drupal\tmgmt_server\Controller\TMGMTServerController::languagePairsIndex'
   requirements:
     _permission: 'access content'
 
