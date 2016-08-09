@@ -152,7 +152,7 @@ class TMGMTServerClient extends ContentEntityBase implements TMGMTServerClientIn
    */
   public function setKeys() {
     $this->set('client_id', user_password($this::TMGMT_KEY_LENGTH));
-    $this->set('secret', user_password($this::TMGMT_KEY_LENGTH));
+    $this->set('client_secret', user_password($this::TMGMT_KEY_LENGTH));
   }
 
   /**
@@ -165,8 +165,8 @@ class TMGMTServerClient extends ContentEntityBase implements TMGMTServerClientIn
   /**
    * {@inheritdoc}
    */
-  public function getSecret() {
-    return $this->get('secret');
+  public function getClientSecret() {
+    return $this->get('client_secret');
   }
 
   /**
