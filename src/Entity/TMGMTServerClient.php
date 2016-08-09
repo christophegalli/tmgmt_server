@@ -250,8 +250,8 @@ class TMGMTServerClient extends ContentEntityBase implements TMGMTServerClientIn
         'weight' => -4,
       ));
 
-    $fields['secret'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Secret'))
+    $fields['client_secret'] = BaseFieldDefinition::create('string')
+      ->setLabel(t(' Client Secret'))
       ->setDescription(t('The secret key for this client.'))
       ->setSettings(array(
         'max_length' => 255,
