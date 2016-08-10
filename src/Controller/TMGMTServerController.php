@@ -5,12 +5,14 @@ namespace Drupal\tmgmt_server\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\tmgmt\Entity\JobItem;
 use Drupal\tmgmt\TMGMTException;
-use GuzzleHttp\Psr7\Response;
+use Drupal\tmgmt_server\Entity\TMGMTServerClient;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Component\Serialization\Json;
 use Drupal\tmgmt\Entity\Job;
 use Drupal\tmgmt_server\Entity\TMGMTRemoteSource;
+use Drupal\Component\Utility\Crypt;
 
 /**
  * Class TMGMTServerController.
@@ -18,6 +20,11 @@ use Drupal\tmgmt_server\Entity\TMGMTRemoteSource;
  * @package Drupal\tmgmt_server\Controller
  */
 class TMGMTServerController extends ControllerBase {
+
+  /**
+   * Defined character count for key.
+   */
+  const TMGMT_AUTH_KEY_LENGTH = 64;
 
   /**
    * Create Job from data transferred by the client.
@@ -164,6 +171,17 @@ class TMGMTServerController extends ControllerBase {
   }
 
   public function languagePairsIndex(Request $request) {
+
+    $headers = getallheaders();
+
+    if (!$this->authenticate($headers['Authenticate'])) {
+      $response = new Response(
+        'Authentications failed',
+        Response::HTTP_UNAUTHORIZED
+      );
+      return $response;
+    }
+
     $source = $request->get('source_language');
 
     $languages[] = array(
@@ -177,6 +195,93 @@ class TMGMTServerController extends ControllerBase {
     ];
 
     return new JsonResponse($response_data);
+  }
+
+  /**
+   * Find Server Client entity by its id.
+   *
+   * @param int $id
+   *   Id we are looking for.
+   *
+   * @return TMGMTServerClient
+   *   The found entity or NULL.
+   */
+  public function findServerClientById($id) {
+    /** @var array $ids */
+    $ids = \Drupal::entityQuery('tmgmt_server_client')
+      ->condition('client_id', $id)
+      ->execute();
+
+    if (count($ids) != 1) {
+      return NULL;
+    }
+
+    return TMGMTServerClient::load(array_shift($ids));
+  }
+
+  /**
+   * Get the parts of the authentication string and check correct format.
+   *
+   * @param string $auth_string
+   *   The string passed for ahtientication.
+   *
+   * @return array
+   *   The correct parts or NULL.
+   */
+  public function parseAuthString($auth_string) {
+
+    if (empty($auth_string)) {
+      return NULL;
+    }
+
+    $parts = explode('@', $auth_string);
+
+    if (count($parts) != 3 || strlen($parts[0]) != $this::TMGMT_AUTH_KEY_LENGTH) {
+      return NULL;
+    }
+
+    if (!is_numeric($parts[2])) {
+      return NULL;
+    }
+
+    $return = array(
+      'client_id' => $parts[0],
+      'secret' => $parts[1],
+      'timestamp' => $parts[2],
+    );
+
+    return $return;
+  }
+
+  /**
+   * Check if authentication string is correct.
+   *
+   * @param string $auth_string
+   *   The string passed to the server.
+   *
+   * @return \Drupal\tmgmt_server\Entity\TMGMTServerClient
+   *   The corresponding entity or null.
+   */
+  public function authenticate($auth_string) {
+
+    if (!$auth_parts = $this->parseAuthString($auth_string)) {
+      return NULL;
+    }
+
+    $server_client = $this->findServerClientById($auth_parts['client_id']);
+    if (empty($server_client)) {
+      return NULL;
+    }
+
+    // Build secret fom stored keys.
+    $secret = Crypt::hmacBase64($auth_parts['timestamp'], $server_client->getClientSecret());
+    if ($secret != $auth_parts['secret']) {
+      return NULL;
+    }
+    else {
+      // Authentication succeeded.
+      return $server_client;
+    }
   }
 
 }

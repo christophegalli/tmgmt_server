@@ -159,14 +159,14 @@ class TMGMTServerClient extends ContentEntityBase implements TMGMTServerClientIn
    * {@inheritdoc}
    */
   public function getClientId() {
-    return $this->get('client_id');
+    return $this->get('client_id')->value;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getClientSecret() {
-    return $this->get('client_secret');
+    return $this->get('client_secret')->value;
   }
 
   /**
@@ -251,7 +251,7 @@ class TMGMTServerClient extends ContentEntityBase implements TMGMTServerClientIn
       ));
 
     $fields['client_secret'] = BaseFieldDefinition::create('string')
-      ->setLabel(t(' Client Secret'))
+      ->setLabel(t('Client Secret'))
       ->setDescription(t('The secret key for this client.'))
       ->setSettings(array(
         'max_length' => 255,
