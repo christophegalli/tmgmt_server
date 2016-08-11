@@ -1,0 +1,6 @@
+tmgmt.translator.settings.server:
+  type: mapping
+  mapping:
+    default_translator:
+      type: string
+      label: Translator to use for jobs received by the server

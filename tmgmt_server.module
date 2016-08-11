@@ -1,0 +1,44 @@
+<?php
+
+use Drupal\tmgmt\TranslatorManager;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function tmgmt_server_form_tmgmt_settings_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $config = \Drupal::configFactory()->getEditable('tmgmt_server.settings');
+
+  $translators = \Drupal::service('plugin.manager.tmgmt.translator')->getLabels();
+
+  $form['server'] = array(
+    '#type' => 'details',
+    '#title' => t('TMGMT Server'),
+    '#open' => TRUE,
+  );
+  $form['server']['default_translator'] = array(
+    '#type' => 'select',
+    '#title' => t('Default translator'),
+    '#description' => t("Translator to be used for jobs received by the server."),
+    '#options' => $translators,
+    '#default_value' => $config->get('default_translator'),
+  );
+
+  $form['#submit'][] = 'tmgmt_server_form_tmgmt_settings_form_submit';
+
+}
+
+/**
+ * Submitter to set the server settings.
+ *
+ * @param \Drupal\Core\Form\ $form
+ *   The form.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state.
+ */
+function tmgmt_server_form_tmgmt_settings_form_submit($form, FormStateInterface $form_state) {
+  $config = \Drupal::configFactory()->getEditable('tmgmt_server.settings');
+
+  $config->set('default_translator',
+    $form_state->getValue('default_translator'))->save();
+}
