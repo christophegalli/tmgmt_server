@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Component\Serialization\Json;
 use Drupal\tmgmt\Entity\Job;
-use Drupal\tmgmt_server\Entity\TMGMTRemoteSource;
+use Drupal\tmgmt_server\Entity\TMGMTServerRemoteSource;
 use Drupal\Component\Utility\Crypt;
 use Drupal\tmgmt\Entity\Translator;
 
@@ -81,7 +81,7 @@ class TMGMTServerController extends ControllerBase {
       $item['user_agent'] = $job_data['user_agent'];
       $item['langcode'] = $job_data['from'];
 
-      $sources[$key] = TMGMTRemoteSource::create($item);
+      $sources[$key] = TMGMTServerRemoteSource::create($item);
       $sources[$key]->save();
     }
 
@@ -129,7 +129,7 @@ class TMGMTServerController extends ControllerBase {
   /**
    * Pull translation data form remote source, return to client.
    *
-   * @param TMGMTRemoteSource $tmgmt_server_remote_source
+   * @param TMGMTServerRemoteSource $tmgmt_server_remote_source
    *   Corresponding job item.
    *
    * @return \Symfony\Component\HttpFoundation\Response
@@ -138,7 +138,7 @@ class TMGMTServerController extends ControllerBase {
    * @throws TMGMTException
    *   If 0 or more than 1 job items are returned ny the entity query.
    */
-  public function pullTranslation(TMGMTRemoteSource $tmgmt_server_remote_source) {
+  public function pullTranslation(TMGMTServerRemoteSource $tmgmt_server_remote_source) {
     /* @var array $item_ids */
 
     // Return job item data when provided with the remote source id.

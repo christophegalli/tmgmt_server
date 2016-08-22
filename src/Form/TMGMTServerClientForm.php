@@ -4,7 +4,7 @@ namespace Drupal\tmgmt_server\Form;
 
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\tmgmt_server\Entity\TMGMTRemoteSource;
+use Drupal\tmgmt_server\Entity\TMGMTServerRemoteSource;
 
 /**
  * Form controller for TMGMT Server Client edit forms.
@@ -30,7 +30,7 @@ class TMGMTServerClientForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    /** @var TMGMTRemoteSource $entity */
+    /** @var TMGMTServerRemoteSource $entity */
     $entity = $this->entity;
 
     // Create keys and add them if not available.

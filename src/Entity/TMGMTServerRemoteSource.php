@@ -24,7 +24,7 @@ use Drupal\user\UserInterface;
  *   },
  * )
  */
-class TMGMTRemoteSource extends ContentEntityBase {
+class TMGMTServerRemoteSource extends ContentEntityBase {
 
   use EntityChangedTrait;
 

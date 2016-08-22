@@ -24,7 +24,7 @@ use Drupal\tmgmt\TMGMTException;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\tmgmt\Entity\Job;
-use Drupal\tmgmt_server\Entity\TMGMTRemoteSource;
+use Drupal\tmgmt_server\Entity\TMGMTServerRemoteSource;
 use GuzzleHttp\Client;
 
 /**
@@ -70,7 +70,7 @@ class RemoteSource extends SourcePluginBase implements SourcePreviewInterface, C
   }
 
   /**
-   * Implements TMGMTRemoteSourcePluginController::getData().
+   * Implements TMGMTServerRemoteSourcePluginController::getData().
    *
    * Returns the data from the fields as a structure that can be processed by
    * the Translation Management system.
@@ -244,7 +244,7 @@ class RemoteSource extends SourcePluginBase implements SourcePreviewInterface, C
     /*
      * @var RemoteSource $source
      */
-    $source = TMGMTRemoteSource::load($job_item->getItemId());
+    $source = TMGMTServerRemoteSource::load($job_item->getItemId());
     $source->data = serialize($job_item->getData());
     $source->state = 1; // TMGMT_SERVER_REMOTE_SOURCE_TRANSLATED;
     $source->save();
