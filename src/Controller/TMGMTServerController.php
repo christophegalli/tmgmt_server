@@ -129,6 +129,9 @@ class TMGMTServerController extends ControllerBase {
   /**
    * Pull translation data form remote source, return to client.
    *
+   * This path/method is only for compatibility reasons with D7 client.
+   * The D8 client only uses pullRemoteItem.
+   *
    * @param TMGMTServerRemoteSource $tmgmt_server_remote_source
    *   Corresponding job item.
    *
@@ -165,7 +168,7 @@ class TMGMTServerController extends ControllerBase {
 
   public function pullRemoteItem (JobItem $tmgmt_job_item) {
 
-    // Return job item data when provide with the job item id.
+    // Return job item data when provided with the job item id.
     $response = [];
     $response['data'] = $tmgmt_job_item->getData();
     return new JsonResponse($response);

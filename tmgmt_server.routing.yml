@@ -38,4 +38,3 @@ entity.tmgmt_server_client.add:
     _title: 'Add Client'
   requirements:
     _permission: 'access content'
-
