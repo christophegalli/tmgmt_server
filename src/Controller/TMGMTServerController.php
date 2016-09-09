@@ -61,7 +61,7 @@ class TMGMTServerController extends ControllerBase {
     $headers = getallheaders();
 
     $job_data = [
-      'label' => $request->get('label'),
+      'label' => (string) $request->get('label'),
       'from' => $request->get('from'),
       'to' => $request->get('to'),
       'items' => $request->get('items'),
@@ -73,10 +73,16 @@ class TMGMTServerController extends ControllerBase {
     $sources = [];
 
     foreach ($job_data['items'] as $key => $item) {
+      $item['label'] = $job_data['label'];
       $item['cid'] = 0;
       $item['source_language'] = $job_data['from'];
       $item['target_language'] = $job_data['to'];
       $item['uid'] = \Drupal::currentUser();
+
+      // Rebuilding the label the was filtered out for the transfer.
+      foreach ($item['data'] as $field_key => $field_value) {
+        $item['data'][$field_key]['#label'] = $field_key;
+      }
       $item['data'] = serialize($item['data']);
       $item['user_agent'] = $job_data['user_agent'];
       $item['langcode'] = $job_data['from'];
@@ -92,6 +98,7 @@ class TMGMTServerController extends ControllerBase {
       'source_language' => $job_data['from'],
       'target_language' => $job_data['to'],
       'translator' => 'local',
+      // @TODO: get the translator from settings.
     ]);
 
     // This will be saved in the following addItem() call.

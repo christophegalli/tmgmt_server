@@ -42,8 +42,8 @@ class RemoteSource extends SourcePluginBase implements SourcePreviewInterface, C
    * {@inheritdoc}
    */
   public function getLabel(JobItemInterface $job_item) {
-    if ($entity = entity_load($job_item->getItemType(), $job_item->getItemId())) {
-      return $entity->label() ?: $entity->id();
+    if ($entity = TMGMTServerRemoteSource::load($job_item->getItemId())) {
+      return $entity->label->value ?: $entity->id();
     }
   }
 
