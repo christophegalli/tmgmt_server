@@ -256,7 +256,7 @@ class RemoteSource extends SourcePluginBase implements SourcePreviewInterface, C
     // translation happened instantly (machine-translation) in which case the
     // service should output the translated data in the response of the
     // request.
-    if (!empty($source->callback) && $source->created != REQUEST_TIME) {
+    if (!empty($source->callback) && $source->created->value != REQUEST_TIME) {
 
       $url = $source->callback->value;
       $client = new Client();
