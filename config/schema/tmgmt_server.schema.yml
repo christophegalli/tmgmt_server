@@ -4,3 +4,10 @@ tmgmt.translator.settings.server:
     default_translator:
       type: string
       label: Translator to use for jobs received by the server
+tmgmt_server.settings:
+  type: config_entity
+  label: 'Server settings'
+  mapping:
+    default_translator:
+      type: string
+      label: 'Default tranlsator to be used'
