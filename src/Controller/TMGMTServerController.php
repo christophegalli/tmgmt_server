@@ -54,7 +54,7 @@ class TMGMTServerController extends ControllerBase {
    *   If successful, return relation table in body.
    *
    * @throws TMGMTException
-   *   When LocalTask creation fails.
+   *   When translation request fails.
    */
   public function translationJob(Request $request) {
     /* @var Job $job */
@@ -97,8 +97,8 @@ class TMGMTServerController extends ControllerBase {
       'uid' => 1,
       'source_language' => $job_data['from'],
       'target_language' => $job_data['to'],
-      'translator' => 'local',
-      // @TODO: get the translator from settings.
+      'translator' => \Drupal::config('tmgmt_server.settings')
+        ->get('default_translator'),
     ]);
 
     // This will be saved in the following addItem() call.
@@ -113,11 +113,14 @@ class TMGMTServerController extends ControllerBase {
       $mapping_table[$key] = $remote_item->id();
     }
 
-    // Request translation locally.
-    $transaction = \Drupal::service('database')->startTransaction();
-    if ($job->requestTranslation() === FALSE) {
-      $transaction->rollback();
-      throw new TMGMTException('Local Task cannot be created');
+    // Request translation, only if the translator is set.
+    // Otherwise, leave it as 'submitted'.
+    if ($job->hasTranslator()) {
+      $transaction = \Drupal::service('database')->startTransaction();
+      if ($job->requestTranslation() === FALSE) {
+        $transaction->rollback();
+        throw new TMGMTException('Translation request cannot be executed.');
+      }
     }
 
     // The job has been successfully submitted.
