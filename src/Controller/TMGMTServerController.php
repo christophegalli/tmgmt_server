@@ -211,26 +211,27 @@ class TMGMTServerController extends ControllerBase {
     $default_translator = \Drupal::config('tmgmt_server.settings')->get('default_translator');
     $translator = Translator::load($default_translator);
 
-    if (empty($source_language)) {
-      // We need to collect target languages for each of our local language.
-      foreach (\Drupal::languageManager()->getLanguages() as $key => $info) {
-        foreach ($translator->getSupportedTargetLanguages($key) as $target_language) {
+    if(isset($translator)) {
+      if (empty($source_language)) {
+        // We need to collect target languages for each of our local language.
+        foreach (\Drupal::languageManager()->getLanguages() as $key => $info) {
+          foreach ($translator->getSupportedTargetLanguages($key) as $target_language) {
+            $languages[] = array(
+              'source_language' => $key,
+              'target_language' => $target_language,
+            );
+          }
+        }
+      }
+      else {
+        foreach ($translator->getSupportedTargetLanguages($source_language) as $target_language) {
           $languages[] = array(
-            'source_language' => $key,
+            'source_language' => $source_language,
             'target_language' => $target_language,
           );
         }
       }
     }
-    else {
-      foreach ($translator->getSupportedTargetLanguages($source_language) as $target_language) {
-        $languages[] = array(
-          'source_language' => $source_language,
-          'target_language' => $target_language,
-        );
-      }
-    }
-
     $response_data = [
       'status' => 'ok',
       'data' => $languages,
