@@ -211,7 +211,7 @@ class TMGMTServerController extends ControllerBase {
     $default_translator = \Drupal::config('tmgmt_server.settings')->get('default_translator');
     $translator = Translator::load($default_translator);
 
-    if(isset($translator)) {
+    if (isset($translator)) {
       if (empty($source_language)) {
         // We need to collect target languages for each of our local language.
         foreach (\Drupal::languageManager()->getLanguages() as $key => $info) {
