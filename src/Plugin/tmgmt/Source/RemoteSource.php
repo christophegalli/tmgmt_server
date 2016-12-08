@@ -26,6 +26,9 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\tmgmt\Entity\Job;
 use Drupal\tmgmt_server\Entity\TMGMTServerRemoteSource;
 use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Cookie\SetCookie;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Content entity source plugin controller.
@@ -259,14 +262,20 @@ class RemoteSource extends SourcePluginBase implements SourcePreviewInterface, C
     if (!empty($source->callback) && $source->created->value != REQUEST_TIME) {
 
       $url = $source->callback->value;
-      $client = new Client();
+      $client = \Drupal::httpClient();
       $options = [];
       $options['form_params'] = array('id' => $job_item->getItemId());
 
       // Support for debug session, pass on the cookie.
-      if (isset($_COOKIE['XDEBUG_SESSION'])) {
-        $cookie = 'XDEBUG_SESSION=' . $_COOKIE['XDEBUG_SESSION'];
-        $options['headers'] = ['Cookie' => $cookie];
+      $request = \Drupal::request();
+      if ($cookies = $this->extractCookiesFromRequest($request)) {
+        $cookie_jar = new CookieJar();
+        foreach ($cookies as $cookie_name => $values) {
+          foreach ($values as $value) {
+            $cookie_jar->setCookie(new SetCookie(['Name' => $cookie_name, 'Value' => $value, 'Domain' => $request->getHost()]));
+          }
+        }
+        $options['cookies'] = $cookie_jar;
       }
 
       try {
@@ -283,6 +292,47 @@ class RemoteSource extends SourcePluginBase implements SourcePreviewInterface, C
     }
 
     return TRUE;
+  }
+
+  /**
+   * Adds xdebug cookies, from request setup.
+   *
+   * In order to debug web tests you need to either set a cookie, have the
+   * Xdebug session in the URL or set an environment variable in case of CLI
+   * requests. If the developer listens to connection on the parent site, by
+   * default the cookie is not forwarded to the client side, so you cannot
+   * debug the code running on the child site. In order to make debuggers work
+   * this bit of information is forwarded. Make sure that the debugger listens
+   * to at least three external connections.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The request.
+   *
+   * @return array
+   *   The extracted cookies.
+   *
+   * @see \Drupal\Tests\XdebugRequestTrait
+   */
+  protected function extractCookiesFromRequest(Request $request) {
+    $cookie_params = $request->cookies;
+    $cookies = [];
+    if ($cookie_params->has('XDEBUG_SESSION')) {
+      $cookies['XDEBUG_SESSION'][] = $cookie_params->get('XDEBUG_SESSION');
+    }
+    // For CLI requests, the information is stored in $_SERVER.
+    $server = $request->server;
+    if ($server->has('XDEBUG_CONFIG')) {
+      // $_SERVER['XDEBUG_CONFIG'] has the form "key1=value1 key2=value2 ...".
+      $pairs = explode(' ', $server->get('XDEBUG_CONFIG'));
+      foreach ($pairs as $pair) {
+        list($key, $value) = explode('=', $pair);
+        // Account for key-value pairs being separated by multiple spaces.
+        if (trim($key, ' ') == 'idekey') {
+          $cookies['XDEBUG_SESSION'][] = trim($value, ' ');
+        }
+      }
+    }
+    return $cookies;
   }
 
   /**
