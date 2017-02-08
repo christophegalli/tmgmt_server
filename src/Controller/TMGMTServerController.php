@@ -60,6 +60,10 @@ class TMGMTServerController extends ControllerBase {
     /* @var Job $job */
     $headers = getallheaders();
 
+    if (!$this->authenticate($headers['Authenticate'])) {
+      return $this->failResponse();
+    }
+
     $job_data = [
       'label' => (string) $request->get('label'),
       'from' => $request->get('from'),
@@ -177,6 +181,12 @@ class TMGMTServerController extends ControllerBase {
   }
 
   public function pullRemoteItem (JobItem $tmgmt_job_item) {
+
+    $headers = getallheaders();
+
+    if (!$this->authenticate($headers['Authenticate'])) {
+      return $this->failResponse();
+    }
 
     // Return job item data when provided with the job item id.
     $response = [];
